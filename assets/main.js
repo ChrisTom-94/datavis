@@ -43,10 +43,10 @@ function strokePath(path, color){
     ctx.closePath();
 }
 
-function draw(){
-    fillPath({type: "Sphere"}, "#1a285a");
-    fillPath(paths, "#3b5842");
-    strokePath(countries, "#ffffff");
+function drawGlobe(){
+    fillPath({type: "Sphere"}, "#1a285a", "fill");
+    fillPath(paths, "#3b5842", "stroke");
+    strokePath(countries, "#ffffff", "stroke");
 }
 
 function rotate(difference){
@@ -58,7 +58,7 @@ function rotate(difference){
 function render(currentTime){
     ctx.clearRect(0,0, width, height);
     ctx.drawImage(background, 0, 0, width, height)
-    draw();
+    drawGlobe();
     requestAnimationFrame(render);
     const [stop, difference] = wait(currentTime);
     if(stop) return;
