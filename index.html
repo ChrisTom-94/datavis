@@ -7,13 +7,10 @@
     <title>Data-visualisation</title>
   </head>
   <body>
-    <h1>Earth population data</h1>
-    <div class="controls">
-      <div class="controls__speed-rotation">
-        <input aria-label="Speed rotation" id="speed-rotation" type="range" value="3" max="10" min="0" step="1">
-      </div>
-    </div>
+    <h1>Earth population</h1>
+    <p>Current wolrd population : <span id="total-population"></span></p>
     <div id="globe-container"></div>
+    <h2>Selected country : </h2>
     <div id="country-container"></div>
     <script type="module" src="/assets/main.js"></script>
   </body>
