@@ -4,14 +4,29 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Data-visualisation</title>
+    <title>Earth Population</title>
   </head>
   <body>
-    <h1>Earth population</h1>
-    <p>Current wolrd population : <span id="total-population"></span></p>
-    <div id="globe-container"></div>
-    <h2>Selected country : </h2>
-    <div id="country-container"></div>
+    <main>
+      <section>
+        <h1>Earth population 🌎</h1>
+        <p>Current world population : <span id="total-population"></span></p>
+      </section>
+
+      <section class="flags__container">
+        <h2 id="current-flag-name"></h2>
+        <div id="flags" class="flags">
+        </div>
+        <p id="current-flag-data" class="flags__current"></p>
+      </section>
+
+      <section id="globe-container"></section>
+      <section>
+        <h2>Selected country : </h2>
+        <div id="country-container"></div>
+      </section>
+
+    </main>
     <script type="module" src="/assets/main.js"></script>
   </body>
 </html>
