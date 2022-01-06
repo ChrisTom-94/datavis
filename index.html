@@ -4,29 +4,48 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="module" src="./assets/index.js" defer></script>
     <title>Earth Population</title>
   </head>
   <body>
     <main>
-      <section>
-        <h1>Earth population 🌎</h1>
-        <p>Current world population : <span id="total-population"></span></p>
+      <section class="banner">
+        <h1><span class="red">Earth</span> population data</h1>
+        <p class="total-population">We currently are : <span id="total-population"></span></p>
       </section>
 
-      <section class="flags__container">
-        <h2 id="current-flag-name"></h2>
-        <div id="flags" class="flags">
+      <section class="globe__section">
+        <article class="globe__instructions">
+          <h2>Use the 🌎 to select <span class="blue">one</span> or <span class="red">more</span> countries</h2>
+          <div>
+            <p>Use <img alt="mouse wheel icon" class="globe__icons" src="./assets/img/wheel.png"> to zoom</p>
+            <p>Use <img alt="left click icon" class="globe__icons" src="./assets/img/left-click.png"> (hold) to rotate</p>
+          </div>
+        </article>
+        <article>
+          <h3 id="hover-country"></h3>
+          <div id="globe-container"></div>
+        </article>
+      </section>
+
+      <section class="flags__section">
+        <div id="flags" class="flags"></div>
+        <div class="flags__info">
+          <h2 id="current-flag-name"></h2>
+          <p id="current-flag-data" class="flags__current"></p>
         </div>
-        <p id="current-flag-data" class="flags__current"></p>
       </section>
 
-      <section id="globe-container"></section>
+      <section class="selected-countries__container">
+        <div class="selected-countries"></div>
+        <article id="countries-graph"></article>
+      </section>
+
       <section>
-        <h2>Selected country : </h2>
+        <!-- <h2>Selected country : </h2> -->
         <div id="country-container"></div>
       </section>
 
     </main>
-    <script type="module" src="/assets/main.js"></script>
   </body>
 </html>

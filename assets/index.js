@@ -7,6 +7,7 @@ const atlasCountriesList = "https://gist.githubusercontent.com/mbostock/4090846/
 const countriesURL = "https://restcountries.com/v3.1/all";
 
 const totalPopulationEl = d3.select("#total-population");
+const hoverCountryEl = d3.select("#hover-country");
 const flagsNameEl = d3.select("#current-flag-name");
 const flagsContainerEl = d3.select("#flags");
 const flagsPopulationEl = d3.select("#current-flag-data");
@@ -25,23 +26,13 @@ let height =  500;
 // Globe
 const globeCanvas = d3.select("#globe-container").append("canvas")
     .on("mousemove", onMouseMove).on("click", onClick)
-    .call(d3.drag().on("start", () => isDragging = true).on("drag", onDragGlobe).on("end", () => isDragging = false))
+    .call(d3.drag().on("drag", onDrag))
     .call(d3.zoom().on("zoom", onZoom))
 globeCanvas.attr("width", width).attr("height", height).attr("data-globe", true);
 
 const globeCtx = globeCanvas.node().getContext("2d");
 const globeProjection = d3.geoOrthographic().translate([width / 2, height / 2]).rotate([0, 0]).precision(0.1);
 const globeGeoPath = d3.geoPath(globeProjection).context(globeCtx);
-
-// Map
-const mapCanvas = d3.select("#country-container").append("canvas")
-                    .call(d3.drag().on("drag", onDragMap))
-                    .call(d3.zoom().on("zoom", onZoom));
-mapCanvas.attr("width", width).attr("height", height);
-
-const mapCtx = mapCanvas.node().getContext("2d");
-const mapProjection = d3.geoEquirectangular().precision(0.5);
-const mapGeoPath = d3.geoPath(mapProjection).context(mapCtx);
 
 const scaleFactor = 25;
 const dragFactor = 50;
@@ -54,11 +45,9 @@ let countries = null,
     globeRotation, // [number, number, number]
     speedRotation = 2,
 
-    mapPosition, // [number, number]
-
     hoverCountry = null,
     selectedCountries = [],
-    currentCountry = null,
+    selectedCountriesEls,
 
     currentFlag = null,
     currentFlagEl = null,
@@ -71,8 +60,6 @@ const globePaths = () => ([
     { geometry: landPaths, color: "#00d26a", type: "fill" },
     { geometry: countriesPaths, color: "#ffffff", type: "stroke" },
 ]);
-
-const mapPaths = () => [{ geometry: currentCountry?.path, color: "#ff0000", type: "fill" }];
 
 (async () => {
     countries = await d3.json(countriesURL);
@@ -179,6 +166,22 @@ async function hydrateCountriesPaths(){
     });
 }
 
+function hydrateSelectedCountries(country, action = "add"){
+    if(action === "remove") selectedCountries = selectedCountries.filter(c => c.name === country.name)
+    else {
+        if(selectedCountries.findIndex(c => c.name === country.name) < 0) selectedCountries = [...selectedCountries, country];
+    }
+    displaySelectedCountries();
+}
+
+function displaySelectedCountries(){
+    let selectedCountriesContainerEl = d3.select("#selected-countries").data(selectedCountries);
+    selectedCountriesContainerEl.exit().remove();
+    selectedCountriesEls = selectedCountriesContainerEl.selectAll("span").merge(selectedCountriesContainerEl).data(d => d.flag);
+    selectedCountriesEls.exit().remove();
+    selectedCountriesEls.enter().append("span").merge(selectedCountriesEls).text((d) => d);
+}
+
 const separateNumberWithCommas = (number) => new Intl.NumberFormat("en-US").format(number);
 
 const randomInt = (min = 1, max = 4) => Math.floor(Math.random() * (max - min + 1) + min);
@@ -206,47 +209,29 @@ function observerCallback(entries) {
 }
 
 function onResize() {
-    globeCanvas.attr("width", width).attr("height", height);
     globeProjection.scale((Math.min(width, height)) / 2).translate([width / 2, height / 2]);
-    mapCanvas.attr("width", width).attr("height", height);
-    mapProjection.scale((Math.min(width, height)) / 2).translate([width / 2, height / 2]);
-    drawGeoPath(mapGeoPath, mapPaths());
 }
 
 function onMouseMove(e) {
-    if(!("globe" in e.target.dataset)) {
-        if(hoverCountry !== null) hoverCountry === null;
-        return;
-    }
     hoverCountry = findCountry(e);
+    hoverCountry ? hoverCountryEl.text(hoverCountry.properties.name) : hoverCountryEl.text("")
 }
 
 function onClick(e) {
     if (e.target.tagName !== "CANVAS" && !e.target.dataset.globe) return;
-    let clickedCountry = findCountry(e);
-    let index = selectedCountries.findIndex(c => c.name === clickedCountry.properties.name)
-    if(index >= 0) selectedCountries = selectedCountries.slice(index - 1, index)
-    else selectedCountries = [...selectedCountries, {path: clickedCountry, data: countries.find(c => c.name === clickedCountry.properties.name)}]
+    let clickedPath = findCountry(e);
+    let country = countries.find(c => c.name === clickedPath.properties.name)
+    hydrateSelectedCountries(country);
 }
 
 function onZoom(e) {
-    const currentProjection = e.sourceEvent.target.dataset.globe ? globeProjection : mapProjection;
-    let zoom = currentProjection.scale();
+    let zoom = globeProjection.scale();
     e.sourceEvent.deltaY > 0 ? (zoom += scaleFactor) : (zoom -= scaleFactor);
     zoom = Math.min(Math.max(zoom, 130), 250);
-    currentProjection.scale(zoom);
-    currentProjection === mapProjection && drawGeoPath(mapGeoPath, mapPaths());
+    globeProjection.scale(zoom);
 }
 
-function onDragMap(e) {
-    let [x, y] = mapProjection.translate();
-    mapPosition = [x + e.dx, y + e.dy];
-    mapProjection.translate(mapPosition);
-    drawGeoPath(mapGeoPath, mapPaths());
-}
-
-function onDragGlobe(e) {
-    // if(!e.sourceEvent.ctrlKey) return;
+function onDrag(e) {
     globeRotation = globeProjection.rotate();
     const offset = dragFactor / globeProjection.scale();
     globeRotation[0] += e.dx * offset;

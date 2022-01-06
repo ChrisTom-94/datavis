@@ -2,6 +2,10 @@
 
 :root{
   --font: 'Rajdhani', sans-serif;
+  --blue: #2c3e50;
+  --grey: #5c5c5c;
+  --green: #00d26a;
+  --red: #c43636;
 }
 
 *, *::after, *::before{
@@ -14,23 +18,118 @@ body{
   font-family: var(--font);
 }
 
-section:not(#globe-container){
+.green{
+  color: var(--green) !important;
+}
+
+.blue{
+  color: var(--blue) !important;
+}
+
+.grey{
+  color: var(--grey) !important;
+}
+
+.red{
+  color: var(--red) !important;
+}
+
+.banner{
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
   padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+  font-weight: bold;
 }
 
-
-h1 {
-  color: #2c3e50;
-  font-size: 5rem;
+.banner h1 {
+  color: var(--grey);
 }
 
-.flags__container h2, .flags__container p{
+.banner .total-population{
+  color: var(--grey);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.banner .total-population span{
+  color: var(--red);
+  font-size: 2rem;
+}
+
+.flags__section h2, .flags__section p{
   text-align: center;
+}
+
+.flags__info{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.flags__info p{
+  font-size: 1.5rem;
 }
 
 #flags{
   display: flex;
+  align-items: center;
+  column-gap: 1rem;
   overflow: hidden;
-  font-size: 4rem;
+  overflow: hidden;
+  font-size: 7rem;
   user-select: none;
+}
+
+#flags ::-webkit-scrollbar{
+  display: none;
+}
+
+.flags__section span.current{
+  font-size: 10rem;
+}
+
+.globe__section{
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  place-items: center;
+  min-height: 90vh;
+}
+
+.globe__section h2{
+  font-size: 4rem;
+  line-height: 4rem;
+}
+
+.globe__section h3{
+  text-align: center;
+  margin-bottom: 2rem;
+  min-height: 2rem;
+}
+
+.globe__instructions{
+  height: 70%;
+  max-width: 600px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.globe__instructions p{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.globe__icons{
+  max-width: 30px;
 }
