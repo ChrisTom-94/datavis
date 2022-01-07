@@ -167,6 +167,7 @@ function findCountry(e) {
           polygon.some((subPoly) => d3.polygonContains(subPoly, mousePosition))
       )))
     );
+    console.log(country)
     return country ?? null;
 }
 
@@ -224,9 +225,10 @@ function onMouseMove(e) {
 function onClick(e) {
     if (e.target.tagName !== "CANVAS" && !e.target.dataset.globe) return;
     let clickedCountry = findCountry(e);
-    let index = selectedCountries.findIndex(c => c.name === clickedCountry.properties.name)
-    if(index >= 0) selectedCountries = selectedCountries.slice(index - 1, index)
-    else selectedCountries = [...selectedCountries, {path: clickedCountry, data: countries.find(c => c.name === clickedCountry.properties.name)}]
+    console.log(clickedCountry)
+    // let index = selectedCountries.findIndex(c => c.name === clickedCountry.properties.name)
+    // if(index >= 0) selectedCountries = selectedCountries.slice(index - 1, index)
+    // else selectedCountries = [...selectedCountries, {path: clickedCountry, data: countries.find(c => c.name === clickedCountry.properties.name)}]
 }
 
 function onZoom(e) {
