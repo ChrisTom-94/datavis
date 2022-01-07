@@ -4,19 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" src="./assets/index.js" defer></script>
+    <script type="module" src="./assets/main.js" defer></script>
     <title>Earth Population</title>
   </head>
   <body>
-    <main>
-      <section class="banner">
-        <h1><span class="red">Earth</span> population data</h1>
-        <p class="total-population">We currently are : <span id="total-population"></span></p>
-      </section>
+    <header class="banner">
+      <h1><span class="red">Earth</span> population data</h1>
+      <p class="total-population">We currently are : <span id="total-population"></span></p>
+    </header>
 
+    <main>
       <section class="globe__section">
         <article class="globe__instructions">
-          <h2>Use the 🌎 to select <span class="blue">one</span> or <span class="red">more</span> countries</h2>
+          <h2>Click on the 🌎 to select <span class="blue">one</span> or <span class="red">more</span> countries</h2>
           <div>
             <p>Use <img alt="mouse wheel icon" class="globe__icons" src="./assets/img/wheel.png"> to zoom</p>
             <p>Use <img alt="left click icon" class="globe__icons" src="./assets/img/left-click.png"> (hold) to rotate</p>
@@ -27,21 +27,11 @@
           <div id="globe-container"></div>
         </article>
       </section>
-
-      <section class="flags__section">
-        <div id="flags" class="flags"></div>
-        <div class="flags__info">
-          <h2 id="current-flag-name"></h2>
-          <p id="current-flag-data" class="flags__current"></p>
-        </div>
-      </section>
-
-      <section class="selected-countries__container">
-        <h2>Selected countries</h2>
-        <p>Click to one flag to remove it from the list</p>
-        <div class="selected-countries"></div>
-        <article id="countries-graph"></article>
-      </section>
     </main>
+
+    <footer>
+      <div id="current-flag"></div>
+      <div id="flag-slider"></div>
+    </footer>
   </body>
 </html>

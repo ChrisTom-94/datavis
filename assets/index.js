@@ -219,6 +219,7 @@ function displayGraphSelectedCountries(){
 
 function addMissedCountries(countriesList){
     let toReplace = [
+        // from                 to
         ["Russian Federation", "Russia"], 
         ["Venezuela, Bolivarian Republic of", "Venezuela"], 
         ["Congo, the Democratic Republic of the", "Republic of the Congo"]
@@ -268,7 +269,6 @@ function onMouseMove(e) {
 function onClick(e) {
     if (e.target.tagName !== "CANVAS" && !e.target.dataset.globe) return;
     let clickedPath = findCountry(e);
-    console.log(clickedPath)
     let country = countries.find(c => c.name === clickedPath?.properties.name)
     hydrateSelectedCountries(country);
 }
