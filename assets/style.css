@@ -20,6 +20,7 @@ body{
   flex-direction: column;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 }
 
 .green{
@@ -145,11 +146,47 @@ footer{
 
 .graph{
   position: absolute;
-  top: 50%;
-  left: 50%;
   background-color: white;
+  border: 1px solid var(--blue);
+  border-radius: 1rem;
 }
 
 .graph__header{
   display: flex;
+  min-width: 150px;
+  background-color: var(--blue);
+  border-radius: 0.9rem 0.9rem 0 0;
+}
+
+.graph__button{
+  background-color: transparent;
+  outline: none;
+  border: none;
+  height: 100%;
+  padding: 0.5rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.graph__button:hover{
+  background-color: var(--red);
+}
+
+.graph__button:nth-child(1){
+  border-radius: 0.9rem 0 0 0;
+  cursor: grab;
+}
+
+.graph__button:nth-child(2){
+  margin-left: auto;
+}
+
+.graph__button:nth-child(3){
+  border-radius: 0 0.9rem 0 0;
+}
+
+.graph__button img {
+  pointer-events: none;
+  max-width: 20px;
+  filter: brightness() invert();
 }
