@@ -19,8 +19,7 @@ body{
   display: flex;
   flex-direction: column;
   width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 .green{
@@ -103,7 +102,7 @@ main{
   max-width: 30px;
 }
 
-.selected-countries, #flag-slider, footer{
+.selected-countries, #flag-slider, #flag-slider-container{
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -117,7 +116,7 @@ main{
   font-size: 2.5rem;
 }
 
-footer{
+#flag-slider-container{
   padding: 1rem;
   border-radius: 0 0 1rem 1rem;
   width: min(100%, 450px);
@@ -148,7 +147,8 @@ footer{
   position: absolute;
   background-color: white;
   border: 1px solid var(--blue);
-  border-radius: 1rem;
+  border-radius: 1rem 1rem 0 0;
+  resize: both;
 }
 
 .graph__header{
@@ -156,6 +156,10 @@ footer{
   min-width: 150px;
   background-color: var(--blue);
   border-radius: 0.9rem 0.9rem 0 0;
+}
+
+.graph__header--red{
+  background-color: var(--red);
 }
 
 .graph__button{

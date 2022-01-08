@@ -35,33 +35,36 @@ import Graph from "./scripts/Graph";
         hoverCountry = null,
         selectedCountries = [],
         selectedCountriesPaths = [],
-        currentSelectedCountries = 0,
         flagSlider = null,
         currentFlag = null,
-        graphs = [],
-        currentGraph = 0;
+        graph = null;
         
     (async () => {
+
+        // total population
         let totalPopulationData = await d3.json(TOTAL_POPULATION_URL);
-        console.log(totalPopulationData["total_population"][0])
         totalPopulation = totalPopulationData["total_population"][0].population;
         d3.select("#total-population").text(d3.format(",")(totalPopulation));
         d3.interval(animateTotalPopulation, 1000);
 
+        // get countries
         countries = await d3.json(COUNTRIES_URL);
         countries = countries.map(filterCountriesData);
 
     
+        // get globe geojson
         let atlasLand = await d3.json(ATLAS_LAND_URL);
         let atlasCountries = await d3.json(ATLAS_COUNTRIES_URL);
     
         let atlasCountriesList = await d3.tsv(ATLAS_COUNTRIES_LIST_URL);
         atlasCountriesList = fixCountriesNames(atlasCountriesList);
     
+        // convert geojson to polygon
         landPath = topojson.feature(atlasLand, atlasLand.objects.land);
         countriesPath = topojson.feature(atlasCountries, atlasCountries.objects.countries);
         countriesPath = hydrateCountriesPaths(atlasCountriesList, countriesPath);
     
+        // init globe
         let {width, height} = canvasOptions
         let globeCanvas = d3.select("#globe-container")
             .append("canvas")
@@ -79,6 +82,7 @@ import Graph from "./scripts/Graph";
     
         animateGlobe();
     
+        // init flags animation
         flagSlider = d3.select("#flag-slider");
         flagSlider.selectAll("span").data(countries)
         .enter()
@@ -89,8 +93,11 @@ import Graph from "./scripts/Graph";
     
         animateFlags();
         d3.interval(animateFlags, randomInt(5, 7) * 1000);
+
+        graph = new Graph(selectedCountries);
+        graph.generateGraph(0)
     
-        window.addEventListener("click", onClickWindow)
+        // global events
         window.addEventListener("resize", onResizeWindow);
         window.addEventListener("mousemove", onMouseMoveWindow);
     
@@ -148,7 +155,7 @@ import Graph from "./scripts/Graph";
         if (gap >= elapsed) return;
         drawGlobe();
         hoverCountry && drawGeometry( hoverCountry, "#c43636", "fill");
-        selectedCountriesPaths[currentSelectedCountries]?.forEach(country => drawGeometry(country, "#c43636", "fill"))
+        selectedCountriesPaths.forEach(country => drawGeometry(country, "#c43636", "fill"))
         if(isGlobeHover) return;
         !hoverCountry && rotateGlobe(gap);
     }
@@ -235,22 +242,22 @@ import Graph from "./scripts/Graph";
 
     function hydrateSelectedCountries(country, path, action = "add"){
         if(action === "remove") {
-            selectedCountries[currentSelectedCountries] = selectedCountries[currentSelectedCountries].filter(c => c.name !== country.name)
-            selectedCountriesPaths[currentSelectedCountries] = selectedCountriesPaths[currentSelectedCountries].filter(p => p.id === path.id)
+            selectedCountries = selectedCountries.filter(c => c.name !== country.name)
+            selectedCountriesPaths = selectedCountriesPaths.filter(p => p.id === path.id)
         }
         else {
-            if(selectedCountries[currentSelectedCountries] && 
-                selectedCountries[currentSelectedCountries].findIndex(c => c.name === country.name) >= 0
+            if(selectedCountries && 
+                selectedCountries.findIndex(c => c.name === country.name) >= 0
                 ){ 
                 hydrateSelectedCountries(country, path, "remove");
             }
             else{
-                if(!selectedCountries[currentSelectedCountries]) {
-                    selectedCountries[currentSelectedCountries] = [];
-                    selectedCountriesPaths[currentSelectedCountries] = [];
+                if(!selectedCountries) {
+                    selectedCountries = [];
+                    selectedCountriesPaths = [];
                 }
-                selectedCountries[currentSelectedCountries] = [...selectedCountries[currentSelectedCountries], country];
-                selectedCountriesPaths[currentSelectedCountries] = [...selectedCountriesPaths[currentSelectedCountries], path]
+                selectedCountries = [...selectedCountries, country];
+                selectedCountriesPaths = [...selectedCountriesPaths, path]
             }
         }
     }
@@ -268,12 +275,9 @@ import Graph from "./scripts/Graph";
     function onClick(e) {
         let clickedPath = findCountry(e);
         let country = countries.find(c => c.name === clickedPath?.properties.name)
-        country && hydrateSelectedCountries(country, clickedPath);
-        if(!graphs[currentGraph]) {
-            graphs[currentGraph] = new Graph(selectedCountries[currentSelectedCountries])
-            graphs[currentGraph].generateGraph(0);
-        }
-        graphs[currentGraph].hydrateGraph(selectedCountries[currentSelectedCountries]);
+        if(!country) return
+        hydrateSelectedCountries(country, clickedPath);
+        graph.hydrateGraph(selectedCountries);
     }
     
     function onDrag(e) {
@@ -291,21 +295,6 @@ import Graph from "./scripts/Graph";
         e.sourceEvent.deltaY > 0 ? (zoom += scaleFactor) : (zoom -= scaleFactor);
         zoom = clamp(zoom, 200, 300);
         projection.scale(zoom);
-    }
-
-    function onClickWindow(e){
-        let id;
-        if((id = parseInt(e.target.closest('[data-graph]')?.dataset.graph))) {
-            graphs[id].close();
-            graphs.slice(id - 1, id);
-            selectedCountries.slice(id - 1, id);
-            selectedCountriesPaths.slice(id - 1, id);
-            currentGraph = Math.max(id - 1, 0);
-            return;
-        }
-        currentSelectedCountries = id;
-        currentGraph = id; 
-        graphs.forEach((graph, i) =>  graph.hasFocus = i === id )
     }
     
     function onResizeWindow() {

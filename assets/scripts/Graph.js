@@ -4,9 +4,7 @@ import { scaleLinear } from "d3";
 export default class Graph{
 
     constructor(countries){
-        this.id = null;
-        this.isOpen = true;
-        this.hasFocus = false;
+
         this.position = {x: 0, y: 0};
         this.width = 500;
         this.height = 400;
@@ -37,7 +35,7 @@ export default class Graph{
     generateHeader(){
         let data = ["move", "minimize", 'close'];
         let header = this.container.append("header");
-        header.attr("class", "graph__header");
+        header.attr("class", `graph__header`);
         let buttons = header.selectAll("button").data(data);
         buttons.enter().append("button")
         .attr("class", 'graph__button')
@@ -49,19 +47,20 @@ export default class Graph{
     generateRects(){
         let scaleHelper = this.getScaleHelper();
         let scaleColorHelper = this.getScaleColorHelper();
-        let rectWidth = (this.height - (this.padding / 2)) / this.countries.length;
+        let rectWidth = (this.width - (this.padding / 2)) / this.countries.length;
+        rectWidth = Math.min(30, rectWidth);
         this.rects = this.graph.selectAll("rect").data(this.countries);
         this.rects.exit().remove();
         this.rects.enter().append("rect").merge(this.rects)
-        .attr("y", (d, i) => (((rectWidth) * i) + this.padding / 2)).attr("x", this.padding)
+        .attr("x", (d, i) => (((rectWidth) * i) + this.padding / 2)).attr("y", this.padding / 2)
         .attr("rx", 5)
-        .attr('height', rectWidth - this.padding / 2)
+        .attr('width', rectWidth - this.padding / 2)
         .attr("data-flag", (d) => d.flag)
         .attr('data-country', (d) => d.name)
         .transition()
         .duration(300)
         .delay((d, i) => i * 250)
-        .attr('width', (d) => scaleHelper(d.population))
+        .attr('height', (d) => scaleHelper(d.population))
         .attr('fill', (d, i) => scaleColorHelper(i))
     }
 
@@ -77,41 +76,10 @@ export default class Graph{
         this.container.attr("style", `top: ${e.y - offset}px; left: ${e.x - offset}px`);
     }
 
-    toggleMinimize(){
-        let transitionDuration = 300
-        this.isOpen = !this.isOpen;
-        this.container.transition()
-        .duration(transitionDuration)
-        .ease(d3.easeSin)
-        .attr("style", () => (
-            this.isOpen ? 
-            `top: ${this.position.y}px; left: ${this.position.x}px` :
-            `top: ${window.innerHeight - 30}px; left: ${120 * this.id}px`
-        ))
-        this.graph.transition()
-        .duration(transitionDuration)
-        .ease(d3.easeSin)
-        .attr("style", () => this.isOpen ? "display; block" : "display: none");
-        this.container.select("header").transition()
-        .duration(transitionDuration)
-        .ease(d3.easeSin)
-        .attr("style", () => (this.isOpen ? 'max-width: auto' : 'max-width: 120px'));
-    }
-
-    close(){
-        this.container.node().remove();
-    }
-
-    getScaleHelper(){ return d3.scaleLinear().domain([0, this.getHigher("population")]).range([1, this.height - (this.padding * 5)]) }
+    getScaleHelper(){ return d3.scaleLinear().domain([0, this.getHigher("population")]).range([1, this.height - (this.padding * 2)]) }
 
     getScaleColorHelper(){ return scaleLinear().domain([0, this.countries.length - 1]).range(["#2c3e50", "#c43636"]).interpolate(d3.interpolateHcl)}
 
     getHigher(prop){ return d3.max(this.countries, (d) => +d[prop]) }
 
-    onClick(e){
-        if(!("action" in e.target.dataset)) return;
-        let {action} = e.target.dataset;
-        if(action === "minimize") this.toggleMinimize(); 
-        if(action === "close") this.close(); 
-    }
 }
