@@ -14,12 +14,14 @@
   box-sizing: border-box;
 }
 
+html{
+  height: 100vh;
+}
+
 body{
   font-family: var(--font);
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-  min-height: 100vh;
+  width: 100%;
+  min-height: 100%;
 }
 
 .green{
@@ -34,86 +36,34 @@ body{
   color: var(--red) !important;
 }
 
-.banner{
-  padding: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  font-weight: bold;
+.add-chart__container{
+  position: fixed;
+  inset: auto 1rem 1rem auto;
 }
 
-.banner .total-population{
-  color: var(--grey);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.add-chart__button{
+  border-radius: 200px;
+  background-color: var(--red);
+  padding: 0.5rem;
+  border: none;
+  cursor: pointer;
 }
 
-.banner .total-population span{
-  color: var(--red);
-  font-size: 2rem;
+.add-chart__button:hover{
+  background-color: var(--blue);
 }
 
-main{
-  flex-grow: 3;
+.add-chart__button img{
+  max-width: 40px;
+  filter: brightness() invert();
+  pointer-events: none;
 }
 
-.globe__section{
-  height: 100%;
-  padding: 2rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  place-items: center;
-}
 
-.globe__section h2{
-  font-size: 4rem;
-  line-height: 4rem;
-}
-
-.globe__section h3{
-  position: absolute;
-  z-index: 100;
-  background-color: rgba(255, 255, 255, 0.5);
-  padding: 1.5rem;
-  border-radius: 1rem;
-}
-
-.globe__section h3 p:last-child{
-  font-size: 2.5rem;
-}
-
-.globe__instructions{
-  height: 70%;
-  max-width: 600px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-}
-
-.globe__instructions p{
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.2rem;
-}
-
-.globe__icons{
-  max-width: 30px;
-}
-
-.selected-countries, #flag-slider, #flag-slider-container{
+#flag-slider, #flag-slider-container{
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.selected-countries__container{
-  padding: 1.5rem;
-}
-
-.selected-countries__flags{
-  font-size: 2.5rem;
 }
 
 #flag-slider-container{
@@ -143,54 +93,77 @@ main{
   white-space: nowrap;
 }
 
-.graph{
-  position: absolute;
-  background-color: white;
-  border: 1px solid var(--blue);
-  border-radius: 1rem 1rem 0 0;
-  resize: both;
+#current-flag-population{
+  font-weight: lighter;
 }
 
-.graph__header{
+.banner{
+  position: sticky;
+  inset: 0 0 auto;
+  padding: 1rem;
+  max-height: 75px;
   display: flex;
-  min-width: 150px;
-  background-color: var(--blue);
-  border-radius: 0.9rem 0.9rem 0 0;
+  justify-content: space-between;
+  font-weight: bold;
 }
 
-.graph__header--red{
-  background-color: var(--red);
+.banner .total-population{
+  color: var(--grey);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.graph__button{
-  background-color: transparent;
-  outline: none;
-  border: none;
+.banner .total-population span{
+  font-size: 2rem;
+}
+
+main{
+  width: 100%;
   height: 100%;
-  padding: 0.5rem;
-  cursor: pointer;
-  position: relative;
 }
 
-.graph__button:hover{
-  background-color: var(--red);
+.globe__section, .graph__section{
+  min-height: calc(100vh - 75px);
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  place-items: center;
 }
 
-.graph__button:nth-child(1){
-  border-radius: 0.9rem 0 0 0;
-  cursor: grab;
+h2{
+  font-size: 4rem;
+  line-height: 4rem;
 }
 
-.graph__button:nth-child(2){
-  margin-left: auto;
+h3{
+  position: absolute;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 1.5rem;
+  border-radius: 1rem;
 }
 
-.graph__button:nth-child(3){
-  border-radius: 0 0.9rem 0 0;
+h3 p:last-child{
+  font-size: 2.5rem;
 }
 
-.graph__button img {
-  pointer-events: none;
-  max-width: 20px;
-  filter: brightness() invert();
+.globe__instructions{
+  height: 70%;
+  max-width: 600px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.globe__instructions p{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.globe__icons{
+  max-width: 30px;
 }

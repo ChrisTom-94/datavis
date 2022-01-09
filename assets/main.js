@@ -37,7 +37,8 @@ import Graph from "./scripts/Graph";
         selectedCountriesPaths = [],
         flagSlider = null,
         currentFlag = null,
-        graph = null;
+        graphs = null,
+        currentGraph = null;
         
     (async () => {
 
@@ -94,8 +95,11 @@ import Graph from "./scripts/Graph";
         animateFlags();
         d3.interval(animateFlags, randomInt(5, 7) * 1000);
 
-        graph = new Graph(selectedCountries);
-        graph.generateGraph(0)
+        d3.select("#add-graph").on("click", () => {
+            graphs = [...graphs, new Graph(selectedCountries[currentGraph])]
+        })
+        // graph = new Graph(selectedCountries);
+        // graph.generateGraph(0)
     
         // global events
         window.addEventListener("resize", onResizeWindow);

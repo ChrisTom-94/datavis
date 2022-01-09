@@ -22,7 +22,6 @@ export default class Graph{
         this.container = d3.select('body').append(`div`)
         .attr("class", `graph`)
         .attr("data-graph", `${this.id}`)
-        .on("click", this.onClick.bind(this))
         .call(d3.drag().on("drag", this.dragGraph.bind(this)));
         this.generateHeader();
         this.graph = this.container.append("svg")
