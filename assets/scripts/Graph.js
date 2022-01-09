@@ -91,7 +91,7 @@ export default class Graph{
 
     hydrateGraph(countries){
         this.countries = countries;
-        this.countries.length && this.generateRects();
+        this.generateRects();
     }
 
     dragGraph(e){
