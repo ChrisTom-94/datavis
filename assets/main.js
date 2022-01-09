@@ -23,6 +23,8 @@ import Graph from "./scripts/Graph";
     const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
     const randomCountry = () => countries[randomInt(0, countries.length -1)];
     
+    const maxGraphs = 3;
+
     let countries = [], 
         totalPopulation = 0,
         flagSlider = null,
@@ -263,6 +265,7 @@ import Graph from "./scripts/Graph";
     }
 
     function addGraph(){
+        if(graphs.length >= maxGraphs) return;
         currentGraph = graphs.length;
         selectedCountries[currentGraph] = [];
         selectedCountriesPaths[currentGraph] = [];
