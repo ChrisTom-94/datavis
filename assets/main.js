@@ -25,6 +25,8 @@ import Graph from "./scripts/Graph";
     
     let countries = [], 
         totalPopulation = 0,
+        flagSlider = null,
+        currentFlag = null,
         landPath = null,
         countriesPath = null,
         projection = null,
@@ -35,9 +37,7 @@ import Graph from "./scripts/Graph";
         hoverCountry = null,
         selectedCountries = [],
         selectedCountriesPaths = [],
-        flagSlider = null,
-        currentFlag = null,
-        graphs = null,
+        graphs = [],
         currentGraph = null;
         
     (async () => {
@@ -95,22 +95,19 @@ import Graph from "./scripts/Graph";
         animateFlags();
         d3.interval(animateFlags, randomInt(5, 7) * 1000);
 
-        d3.select("#add-graph").on("click", () => {
-            graphs = [...graphs, new Graph(selectedCountries[currentGraph])]
-        })
-        // graph = new Graph(selectedCountries);
-        // graph.generateGraph(0)
+        d3.select("#add-chart").on("click", addGraph);
     
         // global events
         window.addEventListener("resize", onResizeWindow);
         window.addEventListener("mousemove", onMouseMoveWindow);
+        window.addEventListener("click", onClickWindow);
     
     })();
     
     
     function filterCountriesData(country){
-        let {name: {common}, population, flag, area, region} = country;
-        return {name: common, population, flag, area, region};
+        let {name: {common}, population, flag} = country;
+        return {name: common, population, flag};
     }
     
     function animateTotalPopulation(){
@@ -159,9 +156,8 @@ import Graph from "./scripts/Graph";
         if (gap >= elapsed) return;
         drawGlobe();
         hoverCountry && drawGeometry( hoverCountry, "#c43636", "fill");
-        selectedCountriesPaths.forEach(country => drawGeometry(country, "#c43636", "fill"))
-        if(isGlobeHover) return;
-        !hoverCountry && rotateGlobe(gap);
+        selectedCountriesPaths[currentGraph]?.forEach(country => drawGeometry(country, "#c43636", "fill"))
+        !isGlobeHover && rotateGlobe(gap);
     }
     
     function drawGlobe(){
@@ -246,24 +242,64 @@ import Graph from "./scripts/Graph";
 
     function hydrateSelectedCountries(country, path, action = "add"){
         if(action === "remove") {
-            selectedCountries = selectedCountries.filter(c => c.name !== country.name)
-            selectedCountriesPaths = selectedCountriesPaths.filter(p => p.id === path.id)
+            selectedCountries[currentGraph] = selectedCountries[currentGraph].filter(c => c.name !== country.name)
+            selectedCountriesPaths[currentGraph] = selectedCountriesPaths[currentGraph].filter(p => p.id === path.id)
         }
         else {
-            if(selectedCountries && 
-                selectedCountries.findIndex(c => c.name === country.name) >= 0
+            if(selectedCountries[currentGraph] && 
+                selectedCountries[currentGraph].findIndex(c => c.name === country.name) >= 0
                 ){ 
                 hydrateSelectedCountries(country, path, "remove");
             }
             else{
-                if(!selectedCountries) {
-                    selectedCountries = [];
-                    selectedCountriesPaths = [];
+                if(!selectedCountries[currentGraph]) {
+                    selectedCountries[currentGraph] = [];
+                    selectedCountriesPaths[currentGraph] = [];
                 }
-                selectedCountries = [...selectedCountries, country];
-                selectedCountriesPaths = [...selectedCountriesPaths, path]
+                selectedCountries[currentGraph] = [...selectedCountries[currentGraph], country];
+                selectedCountriesPaths[currentGraph] = [...selectedCountriesPaths[currentGraph], path]
             }
         }
+    }
+
+    function addGraph(){
+        currentGraph = graphs.length;
+        selectedCountries[currentGraph] = [];
+        selectedCountriesPaths[currentGraph] = [];
+        graphs = [...graphs, new Graph(currentGraph, selectedCountries[currentGraph])];
+        hydrateCurrentGraph();
+    }
+
+    function removeGraph(id, graph){
+        selectedCountries.splice(id, 1);
+        selectedCountriesPaths.splice(id, 1);
+        graphs.splice(id, 1);
+        graph.remove();
+        currentGraph = graphs[graphs.length - 1]?.id;
+        hydrateCurrentGraph();
+    }
+
+    function toggleMinimizeGraph(id){
+        let graph = graphs.find(g => g.id === id);
+        graph.toggleMinimize();
+        console.log(graph.isMinimized)
+        if(!graph.isMinimized) hydrateCurrentGraph(id);
+    }
+
+    function hydrateCurrentGraph(id = currentGraph){
+        if(id !== currentGraph) currentGraph = id;
+        graphs.forEach(g => {
+            g.isCurrent = g.id === id;
+            g.container.attr("class", `graph ${g.isCurrent ? 'graph--current' : ''}`)
+            g.header.attr("class", `graph__header ${g.isCurrent ? "graph__header--current" : ''}`);
+        });
+    }
+
+    function removeCountryFromSelection(id, flag){
+        let {name} = countries.find(c => c.flag === flag)
+        selectedCountries[id] = selectedCountries[id].filter(c => c.flag !== flag);
+        selectedCountriesPaths[id] = selectedCountriesPaths[id].filter(c => c.properties.name !== name);
+        graphs[id].hydrateGraph(selectedCountries[id]);
     }
     
     // events callbacks
@@ -280,8 +316,9 @@ import Graph from "./scripts/Graph";
         let clickedPath = findCountry(e);
         let country = countries.find(c => c.name === clickedPath?.properties.name)
         if(!country) return
+        if(!graphs.length) addGraph()
         hydrateSelectedCountries(country, clickedPath);
-        graph.hydrateGraph(selectedCountries);
+        graphs[currentGraph].hydrateGraph(selectedCountries[currentGraph]);
     }
     
     function onDrag(e) {
@@ -310,5 +347,26 @@ import Graph from "./scripts/Graph";
         if(("globe" in e.target.dataset)) return
         isGlobeHover = false;
         hydrateGlobeTooltip(null);
+    }
+
+    function onClickWindow(e){
+        e.stopPropagation();
+        if(!(e.target.closest(".graph"))) return
+        let graph = e.target.closest(".graph")
+        let id = parseInt(graph.dataset.graph);
+        console.log(e)
+        if(e.target.tagName === "text") {
+            let flag = e.target.textContent;
+            removeCountryFromSelection(id, flag)
+            return;
+        }
+        let button;
+        if(!(button = e.target.closest("[data-action]"))){
+            hydrateCurrentGraph(id);
+            return;
+        }
+        let {action} = button.dataset;
+        if(action === "close") removeGraph(id, graph);
+        if(action === "minimize") toggleMinimizeGraph(id);
     }
 })();

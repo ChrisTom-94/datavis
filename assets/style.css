@@ -22,6 +22,7 @@ body{
   font-family: var(--font);
   width: 100%;
   min-height: 100%;
+  overflow: hidden;
 }
 
 .green{
@@ -166,4 +167,63 @@ h3 p:last-child{
 
 .globe__icons{
   max-width: 30px;
+}
+
+.graph{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 120px;
+  min-height: 30px;
+  border: 2px solid var(--blue);
+  background-color: white;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.graph--current{
+  z-index: 9999;
+}
+
+.graph__header{
+  display: flex;
+  align-items: center;
+  background-color: var(--blue);
+}
+
+.graph__header button{
+  border: none;
+  background-color: var(--blue);
+  padding: 0.25rem;
+  cursor: pointer;
+}
+
+.graph__header--current, .graph__header--current button{
+  background-color: var(--red);
+}
+
+.graph__header button:hover{
+  background-color: var(--red);
+}
+
+.graph__header--current button:hover{
+  background-color: var(--blue);
+}
+
+.graph__header button img{
+  max-width: 30px;
+  filter: brightness() invert();
+}
+
+.graph__header button:nth-child(2){
+  margin-left: auto;
+}
+
+svg text{
+  transform: rotateX(180deg) translateY(-40px);
+  cursor: pointer;
+}
+
+.graph__tooltip{
+  z-index: 10000;
 }

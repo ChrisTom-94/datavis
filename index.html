@@ -13,6 +13,9 @@
       <button id="add-chart" class="add-chart__button"><img src="./assets/img/add-chart-icon.png"></button>
     </div>
 
+    <h3 id="graph-tooltip" class="graph__tooltip" style="display: none;">
+    </h3>
+
     <header class="banner">
       <h1><span class="red">Earth</span> population data</h1>
 
@@ -29,34 +32,21 @@
 
     <main>
         <section class="globe__section">
-          <article class="globe__instructions">
-            <h2>Click on the 🌎 to select <span class="blue">one</span> or <span class="red">more</span> countries</h2>
-            <div>
-              <p>Use <img alt="mouse wheel icon" class="globe__icons" src="./assets/img/wheel.png"> to zoom</p>
-              <p>Use <img alt="left click icon" class="globe__icons" src="./assets/img/left-click.png"> (hold) to rotate</p>
-            </div>
-          </article>
+          <div>
+            <article class="globe__instructions">
+              <h2>Click on the 🌎 to select <span class="blue">one</span> or <span class="red">more</span> countries</h2>
+              <div>
+                <p>Use <img alt="mouse wheel icon" class="globe__icons" src="./assets/img/wheel.png"> to zoom</p>
+                <p>Use <img alt="left click icon" class="globe__icons" src="./assets/img/left-click.png"> (hold) to rotate</p>
+              </div>
+            </article>
+          </div>
           
           <article>
             <h3 id="hover-country"></h3>
             <div id="globe-container"></div>
           </article>
         </section>
-
-        <!-- <section class="graph__section">
-          <article class="graph__instruction">
-            <h2>Look at the 📊 to know about <span class="blue">one</span> or <span class="red">more</span> countries population data</h2>
-            <div>
-              <p>Use <img alt="mouse wheel icon" class="globe__icons" src="./assets/img/wheel.png"> to zoom</p>
-              <p>Use <img alt="left click icon" class="globe__icons" src="./assets/img/left-click.png"> (hold) to rotate</p>
-            </div>
-          </article>
-          
-          <article>
-            <header class="graph__header"></header>
-            <div class="graph__container"></div>
-          </article>
-        </section> -->
     </main>
   </body>
 </html>
